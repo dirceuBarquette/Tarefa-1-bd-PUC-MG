@@ -1,2 +1,0 @@
-CREATE DEFINER=`root`@`localhost` FUNCTION `AtualizaQuantPorLote`(`codVacina` INT UNSIGNED) RETURNS SMALLINT(6) NOT DETERMINISTIC CONTAINS SQL SQL SECURITY DEFINER RETURN (SELECT quantidadePorLote FROM Vacina WHERE Vacina.codigoVacina = codVacina)
-
