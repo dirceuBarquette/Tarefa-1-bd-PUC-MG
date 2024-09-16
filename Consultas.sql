@@ -18,7 +18,7 @@ GROUP BY
 
 -- •Média de Idade dos Cidadãos Vacinados. 5858
 SELECT
-    (SUM(TIMESTAMPDIFF(MONTH, cid.dataNascimento, rda.RDA_dataAgendada))/COUNT(*)) AS `Média de Idades em meses`
+    (AVG(TIMESTAMPDIFF(MONTH, cid.dataNascimento, rda.RDA_dataAgendada))/COUNT(*)) AS `Média de Idades em meses`
 FROM
     `RegistroDaAplicacao` rda
 INNER JOIN Cidadao cid ON
@@ -36,28 +36,31 @@ GROUP BY
     `Nome da Vacina`;
 
 -- •Percentual de Agendamentos Realizados por Faixa Etária.
--- FALTA
+SELECT idade, COUNT(*)/(SELECT COUNT(*) FROM Agenda)*100 FROM ( SELECT TIMESTAMPDIFF(year, cid.dataNascimento, agn.dataAgendada) idade FROM Agenda agn INNER JOIN Cidadao cid ON agn.AGN_codigoCidadao=cid.codigoCidadao ) abc GROUP BY idade;
 
 -- •Número Médio de Agendamentos Diários por Centro de Vacinação.
--- AINDA NÃO DEU CERTO
-SELECT
-    cv.nomeCentro Centro, COUNT(`Ag./dia`.quantidade)
-FROM
-    `DoseReservada` dos
-INNER JOIN CentroVacinacao cv ON
-    dos.DOS_codigoCentro = cv.CodigoCentro,
-    (
-        SELECT
-                `DOS_codigoCentro` ct,
-                DATE(`DOS_dataAgendada`) dt,
-                COUNT(*) quantidade
-        FROM
-            `DoseReservada`
-        GROUP BY
-            `ct`, `dt`
-    ) `Ag./dia`
-WHERE cv.CodigoCentro=`Ag./dia`.ct
-GROUP BY
-    Centro;
+SELECT DOS_codigoCentro Centro,COUNT(*)/ 
+(SELECT TIMESTAMPDIFF(DAY,MIN(DOS_dataAgendada),MAX(DOS_dataAgendada)) FROM `DoseReservada` dos	) FROM `DoseReservada`dos GROUP BY Centro
 
 -- •Total de Doses Aplicadas por Centro de Vacinação.
+SELECT `nomeCentro` nome, COUNT(*) total FROM `RegistroDaAplicacao` INNER JOIN CentroVacinacao cv ON `RDA_codigoCentro`= CodigoCentro GROUP BY nome;
+
+-- •Percentual de Cidadãos Totalmente Vacinados.
+
+-- •Tempo Médio entre Agendamento e Aplicação da Vacina.
+
+-- •Total de Cidadãos por Centro de Vacinação.
+SELECT `nomeCentro` nome, COUNT(*) total FROM `RegistroDaAplicacao` INNER JOIN CentroVacinacao cv ON `RDA_codigoCentro`= CodigoCentro GROUP BY nome;
+
+-- •Média de Agendamentos por Cidadão.
+;
+
+-- •Percentual de Agendamentos Realizados em Relação à Capacidade Diária por Centro de Vacinação.
+
+-- •Doses Aplicadas por Semana.
+
+-- •Percentual de Cidadãos que Realizaram Agendamento.
+
+-- •Média de Doses Aplicadas por Dia.
+
+-- •Tempo Médio entre a Aplicação das Doses (para vacinas de múltiplas doses).
